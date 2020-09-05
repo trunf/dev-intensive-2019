@@ -28,38 +28,42 @@ fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND): Date {
 enum class TimeUnits {
     SECOND {
         override fun plural(value: Int) = "$value ${
-            when (value) {
-                1 -> "секунду"
-                in 2..4 -> "секунды"
-                else -> "секунд"
-            }
+        when (value) {
+            1 -> "секунду"
+            in 2..4 -> "секунды"
+            in 5..20, 0 -> "секунд"
+            else -> SECOND.plural(value % 10).drop(2)
+        }
         }"
     },
     MINUTE {
         override fun plural(value: Int) = "$value ${
-            when (value) {
-                1 -> "минуту"
-                in 2..4 -> "минуты"
-                else -> "минут"
-            }
+        when (value) {
+            1 -> "минуту"
+            in 2..4 -> "минуты"
+            in 5..20, 0 -> "минут"
+            else -> MINUTE.plural(value % 10).drop(2)
+        }
         }"
     },
     HOUR {
         override fun plural(value: Int) = "$value ${
-            when (value) {
-                1 -> "час"
-                in 2..4 -> "часа"
-                else -> "часов"
-            }
+        when (value) {
+            1 -> "час"
+            in 2..4 -> "часа"
+            in 5..20, 0 -> "часов"
+            else -> HOUR.plural(value % 10).drop(2)
+        }
         }"
     },
     DAY {
         override fun plural(value: Int) = "$value ${
-            when (value) {
-                1 -> "день"
-                in 2..4 -> "дня"
-                else -> "дней"
-            }
+        when (value) {
+            1 -> "день"
+            in 2..4 -> "дня"
+            in 5..20, 0 -> "дней"
+            else -> DAY.plural(value % 10).drop(2)
+        }
         }"
     };
 
@@ -90,35 +94,18 @@ fun Date.humanizeDiff(date: Date = Date()): String {
         in 1 * SECOND..45 * SECOND -> if (past) "несколько секунд назад" else "через несколько секунд"
         in 45 * SECOND..75 * SECOND -> if (past) "минуту назад" else "через минуту"
         in 75 * SECOND..45 * MINUTE -> {
-            val dTime = diff / MINUTE
-            val units = when (dTime) {
-                1L -> "минуту"
-                in 2..4 -> "минуты"
-                else -> "минут"
-            }
-            //if (past) "$dTime $units назад" else "через $dTime $units"
             val str = TimeUnits.MINUTE.plural((diff / MINUTE).toInt())
             if (past) "$str назад" else "через $str"
         }
         in 45 * MINUTE..75 * MINUTE -> if (past) "час назад" else "через час"
         in 75 * MINUTE..22 * HOUR -> {
-            val dTime = diff / HOUR
-            val units = when (dTime) {
-                1L -> "час"
-                in 2..4 -> "часа"
-                else -> "часов"
-            }
-            if (past) "$dTime $units назад" else "через $dTime $units"
+            val str = TimeUnits.HOUR.plural((diff / HOUR).toInt())
+            if (past) "$str назад" else "через $str"
         }
         in 22 * HOUR..26 * HOUR -> if (past) "день назад" else "через день"
         in 26 * HOUR..360 * DAY -> {
-            val dTime = diff / DAY
-            val units = when (dTime) {
-                1L -> "день"
-                in 2..4 -> "дня"
-                else -> "дней"
-            }
-            if (past) "$dTime $units назад" else "через $dTime $units"
+            val str = TimeUnits.DAY.plural((diff / DAY).toInt())
+            if (past) "$str назад" else "через $str"
         }
         else -> if (past) "более года назад" else "более чем через год"
     }
