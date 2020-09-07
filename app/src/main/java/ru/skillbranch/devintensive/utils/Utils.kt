@@ -1,8 +1,5 @@
 package ru.skillbranch.devintensive.utils
 
-import android.util.CloseGuard
-import androidx.lifecycle.Transformations.map
-
 object Utils {
     fun parseFullName(fullName: String?): Pair<String?, String?> {
         val parts: List<String>? = fullName?.trimIndent()?.split(" ")
